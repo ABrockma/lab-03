@@ -13,18 +13,76 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.listycity3.ui.theme.ListyCity3Theme
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.width
+import androidx.compose.material3.Button
+import androidx.compose.material3.OutlinedTextField
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+
 
 @Composable
 fun CityListScreen(
     cities: List<City>,
+    onAddCity: (city) -> Unit,
     modifier: Modifier = Modifier
 ) {
-    LazyColumn(modifier = modifier) {
-        itemsIndexed(cities) { index, city ->
-            CityRow(city = city)
+    var newCityName by remember { mutableStateOf("") }
+    var newProvinceName by remember { mutableStateOf("") }
+    Column(modifier = modifier) {
+        Row(
+            modifier = modifier
+                .fillMaxWidth()
+                .padding(16.dp)
+        ){
+            OutlinedTextField(  //input field for new city name
+                value = newCityName,
+                onValueChange = { newCityName = it },
+                label = { Text("City") },
+                modifier = Modifier.weight(1f)
+            )
 
-            if (index < cities.lastIndex) {
-                HorizontalDivider()
+            Spacer(modifier = Modifier.width(8.dp))
+
+            OutlinedTextField(  //input field for new city's provence
+                value = newProvinceName,
+                onValueChange = { newProvinceName = it },
+                label = { Text("Province") },
+                modifier = Modifier.weight(1f)
+            )
+
+            Spacer(modifier = Modifier.width(8.dp))
+
+            Button(
+                modifier = Modifier.padding(vertical = 12.dp),
+                onClick = {
+                    if (newCityName.isNotBlank() && newProvinceName.isNotBlank()){
+                        onAddCity(
+                            City(
+                                name = newCityName,
+                                province = newProvinceName
+                            )
+                        )
+                        newCityName = ""
+                        newProvinceName = ""
+                    }  // ennd of if-notBlank body
+                }  // end of onClick body
+            ){  // end of button contructor
+                Text("Add City")
+            }  // end of addCity button
+        } // end of input field row
+
+
+        LazyColumn(modifier = modifier) {
+            itemsIndexed(cities) { index, city ->
+                CityRow(city = city)
+
+                if (index < cities.lastIndex) {
+                    HorizontalDivider()
+                }
             }
         }
     }
